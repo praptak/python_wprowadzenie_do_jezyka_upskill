@@ -25,8 +25,7 @@ def lottery(participants_list, num):
     results = set()
     # to avoid edge cases
     if num >= len(set(participants_list)):
-        results = set(participants_list)
-        return results
+        return set(participants_list)
 
     while len(results) < num:
         random_number = random.randrange(0, len(participants_list))
