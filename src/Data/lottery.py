@@ -6,8 +6,6 @@ from src.Data.participants import ParticipantWeighed, Participant
 def create_list_with_weighed_participants(list):
     weighed_list = []
     for record in list:
-        # print(record)
-        # pp = ParticipantWeighed.from_dict(record)
         weighed_list.append(ParticipantWeighed.from_dict(record))
 
     return weighed_list
@@ -17,7 +15,6 @@ def create_list_with_weighed_participants(list):
 def create_trial_list(list):
     trial_list = []
     for record in list:
-        # print(record)
         for weigh in range(int(record.weight)):
             trial_list.append(Participant(record.id, record.first_name, record.last_name))
 
@@ -27,7 +24,7 @@ def create_trial_list(list):
 def lottery(participants_list, num):
     results = set()
     # to avoid edge cases
-    if num >= len(participants_list):
+    if num >= len(set(participants_list)):
         results = set(participants_list)
         return results
 
