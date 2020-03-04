@@ -1,4 +1,3 @@
-from pathlib import Path
 from src.Data.filepath import select_file
 from src.Data.read_data import read_data
 from src.Data.lottery import lottery, create_list_with_weighed_participants, create_trial_list, number_of_winners
