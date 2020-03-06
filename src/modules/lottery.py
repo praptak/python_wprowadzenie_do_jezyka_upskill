@@ -1,4 +1,5 @@
 import random
+import time
 from src.modules.participants import ParticipantWeighed, Participant
 
 
@@ -41,9 +42,18 @@ def lottery(participants_list, num):
     if num >= len(set(participants_list)):
         return set(participants_list)
 
+    temp_sample_list = []
+
+    temp_sample_list.extend(participants_list)
+
     while len(results) < num:
-        random_number = random.randrange(0, len(participants_list))
-        results.add(participants_list[random_number])
+        random_number = random.randrange(0, len(temp_sample_list))
+        # find participant
+        participant = temp_sample_list[random_number]
+        # add participant to results
+        results.add(participant)
+        # filter off all participants matching participant from sample list
+        temp_sample_list = [x for x in temp_sample_list if x != participant]
 
     return results
 

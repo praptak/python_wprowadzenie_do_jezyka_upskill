@@ -17,12 +17,12 @@ class Participant:
     def __eq__(self, other):
         return self.__hash__() == other.__hash__()
 
-    # added to allow sorting list of objects by fullname
+    # added to allow sorting list of participants by fullname and then by id
     def __gt__(self, other):
-        return self.get_fullname() > other.get_fullname()
+        return self.get_fullname() + self.id > other.get_fullname() + self.id
 
     def __le__(self, other):
-        return self.get_fullname() < other.get_fullname()
+        return self.get_fullname() + self.id < other.get_fullname() + self.id
 
     @classmethod
     def from_dict(cls, dict_source):
@@ -38,4 +38,4 @@ class ParticipantWeighed(Participant):
         return self.get_all_info()
 
     def get_all_info(self):
-        return f'{super().get_fullname()} ,weight={self.weight}'
+        return f'{super().get_fullname()}, weight={self.weight}'
