@@ -1,7 +1,5 @@
 from pathlib import Path
 
-global ROOT
-
 
 def root():
     return Path(__file__).parent.parent.parent.resolve()
