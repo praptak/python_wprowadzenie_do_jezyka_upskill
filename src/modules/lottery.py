@@ -2,7 +2,20 @@ import random
 from src.modules.participants import ParticipantWeighed, Participant
 
 
-#### create list with weighed participants ###
+# how many winners in the lottery
+def number_of_winners():
+    while True:
+        try:
+            winners_number = int(input("Podaj liczbę uczestników do wylosowania: "))
+            if winners_number <= 0:
+                print("Numer musi być dodatni!")
+                continue
+            return winners_number
+        except:
+            print("Podaj poprawny numer!")
+
+
+# list with weighed participants ###
 def create_list_with_weighed_participants(list):
     weighed_list = []
     for record in list:
@@ -11,7 +24,7 @@ def create_list_with_weighed_participants(list):
     return weighed_list
 
 
-#### create trial list based on weigh ####
+# trial list based on weigh ####
 def create_trial_list(list):
     trial_list = []
     for record in list:
@@ -21,6 +34,7 @@ def create_trial_list(list):
     return trial_list
 
 
+# set of winners drawn from list, based on given number
 def lottery(participants_list, num):
     results = set()
     # to avoid edge cases
@@ -34,18 +48,7 @@ def lottery(participants_list, num):
     return results
 
 
-def number_of_winners():
-    while True:
-        try:
-            winners_number = int(input("Podaj liczbę uczestników do wylosowania: "))
-            if winners_number <= 0:
-                print("Numer musi być dodatni!")
-                continue
-            return winners_number
-        except:
-            print("Podaj poprawny numer!")
-
-
+# making a lottery!
 def prize_drawing(data, num):
     res = sorted(lottery(create_trial_list(create_list_with_weighed_participants(data)), num))
     print("", "Wylosowano następujące osoby:", sep="\n")

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 
+# this is project's root folder - I don't know how to do it better :(
 def root():
     return Path(__file__).parent.parent.parent.resolve()
 
@@ -28,6 +29,7 @@ def list_files_in_files_folder():
 
 def select_file():
     lottery_file_list = list_files_in_files_folder()
+    assert all([isinstance(x, LotteryFile) for x in lottery_file_list])
     selected_file = ""
     while selected_file not in lottery_file_list:
         while True:
