@@ -44,3 +44,9 @@ def number_of_winners():
             return winners_number
         except:
             print("Podaj poprawny numer!")
+
+
+def prize_drawing(data, num):
+    res = sorted(lottery(create_trial_list(create_list_with_weighed_participants(data)), num))
+    print("", "Wylosowano następujące osoby:", sep="\n")
+    [print(f"\t{x}") for x in res]

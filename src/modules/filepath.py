@@ -35,12 +35,13 @@ def select_file():
         while True:
             print("Lista plików:")
             [print(f"\t{x.id}: {x.name}") for x in lottery_file_list]
+            print()
             try:
                 input_number = int(input("Wskaż nr pliku z próbą do losowania: ")) - 1
                 if input_number < 0:
                     continue
                 selected_file = lottery_file_list[input_number]
-                print("Wybrano plik", selected_file)
+                print("Wybrano plik", selected_file, end="\n")
                 return selected_file
             except:
                 print("Wskaż poprawny numer!")
