@@ -17,7 +17,7 @@ def searching_all_files(directory, lst):
     [file_list.extend(dirpath.glob(f"**/*.{suffix}")) for suffix in lst]
     lottery_files_list = []
 
-    for num, f in enumerate(file_list, 1):
+    for num, f in enumerate(sorted(file_list), 1):
         lottery_files_list.append(LotteryFile(num, f.resolve().name, f.resolve()))
 
     return lottery_files_list
