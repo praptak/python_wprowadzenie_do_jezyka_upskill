@@ -24,6 +24,10 @@ class Participant:
     def __le__(self, other):
         return self.get_fullname() < other.get_fullname()
 
+    @classmethod
+    def from_dict(cls, dict_source):
+        return cls(**dict_source)
+
 
 class ParticipantWeighed(Participant):
     def __init__(self, id, first_name, last_name, weight=1, *args, **kwargs):
@@ -35,7 +39,3 @@ class ParticipantWeighed(Participant):
 
     def get_all_info(self):
         return f'{super().get_fullname()} ,weight={self.weight}'
-
-    @classmethod
-    def from_dict(cls, dict_source):
-        return cls(**dict_source)
