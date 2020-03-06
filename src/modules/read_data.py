@@ -11,11 +11,7 @@ def read_csv(path):
     with open(path, 'r') as csv_file:
         records = []
         for row in csv.DictReader(csv_file, skipinitialspace=True):
-            d = {}
-            for k, v in row.items():
-                d[k] = v
-
-            records.append(d)
+            records.append(row)
         return records
 
 

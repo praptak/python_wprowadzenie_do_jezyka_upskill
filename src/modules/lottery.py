@@ -1,5 +1,5 @@
 import random
-from src.Data.participants import ParticipantWeighed, Participant
+from src.modules.participants import ParticipantWeighed, Participant
 
 
 #### create list with weighed participants ###

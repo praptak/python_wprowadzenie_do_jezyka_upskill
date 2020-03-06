@@ -1,6 +1,6 @@
-from src.Data.filepath import select_file
-from src.Data.read_data import read_data
-from src.Data.lottery import lottery, create_list_with_weighed_participants, create_trial_list, number_of_winners
+from src.modules.filepath import select_file
+from src.modules.read_data import read_data
+from src.modules.lottery import lottery, create_list_with_weighed_participants, create_trial_list, number_of_winners
 
 # select file from files folder
 selected_file = select_file()

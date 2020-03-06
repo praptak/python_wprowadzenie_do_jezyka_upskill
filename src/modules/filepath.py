@@ -1,23 +1,31 @@
 from pathlib import Path
 
+global ROOT
 
-def searching_all_files(directory, lst, num=0):
+
+def root():
+    return Path(__file__).parent.parent.parent.resolve()
+
+
+ROOT = root()
+
+
+def searching_all_files(directory, lst):
     dirpath = Path(directory)
     assert (dirpath.is_dir())
     assert all([isinstance(x, str) for x in lst])
     file_list = []
-    for x in dirpath.iterdir():
-        if x.is_file() and x.name.split(".")[-1] in lst:
-            num += 1
-            file_list.append(LotteryFile(num, x.resolve().name, x.resolve()))
-        elif x.is_dir():
-            file_list.extend(searching_all_files(x, lst, num))
+    [file_list.extend(dirpath.glob(f"**/*.{suffix}")) for suffix in lst]
+    lottery_files_list = []
 
-    return file_list
+    for num, f in enumerate(file_list, 1):
+        lottery_files_list.append(LotteryFile(num, f.resolve().name, f.resolve()))
+
+    return lottery_files_list
 
 
 def list_files_in_files_folder():
-    return searching_all_files((Path(__file__).parent.parent.parent / "files/").resolve(), ['csv', 'json'])
+    return searching_all_files((ROOT / "files/").resolve(), ['csv', 'json'])
 
 
 def select_file():
