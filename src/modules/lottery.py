@@ -1,5 +1,4 @@
 import random
-import time
 from src.modules.participants import ParticipantWeighed, Participant
 
 
