@@ -40,7 +40,7 @@ def select_participants_file():
     while selected_file not in file_list:
         while True:
             print("Lista plików:")
-            [print(f"\t{x.id}: {x.name}") for x in file_list]
+            [print(f"\t{file.id}: {file.name}") for file in file_list]
             print()
             try:
                 input_number = int(input("Wskaż nr pliku z próbą do losowania: ")) - 1
