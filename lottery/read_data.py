@@ -9,10 +9,7 @@ def read_json(path):
 
 def read_csv(path):
     with open(path, 'r') as csv_file:
-        records = []
-        for row in csv.DictReader(csv_file, skipinitialspace=True):
-            records.append(row)
-        return records
+        return [row for row in csv.DictReader(csv_file, skipinitialspace=True)]
 
 
 def read_data(path):
