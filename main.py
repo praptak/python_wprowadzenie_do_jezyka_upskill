@@ -1,15 +1,21 @@
-from src.modules.filepath import select_participants_file
-from src.modules.read_data import read_data
-from src.modules.lottery import number_of_winners, prize_drawing
+from lottery.filepath import select_participants_file
+from lottery.read_data import read_data
+from lottery.lottery import number_of_winners, prize_drawing
 
-# select file from files folder
-selected_file = select_participants_file()
 
-# number of winners
-winners_number = number_of_winners()
+def main():
+    # select file from files folder
+    selected_file = select_participants_file()
 
-# read file
-data = read_data(selected_file.fullpath)
+    # number of winners
+    winners_number = number_of_winners()
 
-# lottery
-prize_drawing(data, winners_number)
+    # read file
+    data = read_data(selected_file.fullpath)
+
+    # lottery
+    prize_drawing(data, winners_number)
+
+
+if __name__ == '__main__':
+    main()
