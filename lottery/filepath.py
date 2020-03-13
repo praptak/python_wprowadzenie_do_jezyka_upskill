@@ -15,8 +15,6 @@ def searching_all_files(directory_path, file_types=None, recurse=False):
         file_types = ['*']
     dir_path = Path(directory_path)
     temp_file_pattern = Template('$directory*.$file_type')
-    assert (dir_path.is_dir())
-    assert all([isinstance(file_type, str) for file_type in file_types])
     file_list = []
     [file_list.extend(dir_path.glob(temp_file_pattern.substitute(directory='**/' * recurse, file_type=file_type))) for
      file_type in file_types]
@@ -35,8 +33,7 @@ def list_files_in_files_folder():
 
 def select_participants_file():
     file_list = list_files_in_files_folder()
-    assert all([isinstance(x, MyFile) for x in file_list])
-    selected_file = ""
+    selected_file = ''
     while selected_file not in file_list:
         while True:
             print('Lista plików:')
