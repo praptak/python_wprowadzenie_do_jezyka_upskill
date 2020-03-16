@@ -70,7 +70,7 @@ def select_participants_file():
 @dataclass(frozen=True)
 class File:
     name: str
-    full_path: str
+    full_path: Path
 
     def __repr__(self):
         return self.name
