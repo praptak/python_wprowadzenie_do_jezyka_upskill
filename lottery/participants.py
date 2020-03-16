@@ -17,7 +17,7 @@ class Participant:
         return self.full_name() + str(self.id) > other.full_name() + str(other.id)
 
     def __le__(self, other):
-        return self.full_name() + str(self.id) < other.full_name() + str(other.id)
+        return self.full_name() + str(self.id) <= other.full_name() + str(other.id)
 
 
 @dataclass(frozen=True, eq=True)
