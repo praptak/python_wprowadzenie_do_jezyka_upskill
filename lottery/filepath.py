@@ -1,8 +1,5 @@
 from dataclasses import dataclass
 from pathlib import Path
-from string import Template
-
-# this is project's root folder - I don't know how to do it better :(
 from typing import List
 
 
@@ -13,13 +10,13 @@ def root():
 ROOT = root()
 
 
-def searching_all_files(directory_path: Path, file_types: List[str] = None, recurse: bool = False):
+def list_files_in_dir(directory_path: Path, file_types: List[str] = None, recurse: bool = False):
     """
-
-    :param directory_path:
-    :param file_types:
-    :param recurse:
-    :return:
+    lists recursively (if needed) all files within directory, matching file type suffixes
+    :param directory_path: path to directory
+    :param file_types: list of strings - should contain suffixes for searched files, if None, all file types will be listed
+    :param recurse: if true, additionally checks all subdirectories recursively, if false - reads only root folder (directory_path)
+    :return: list of File objects
     """
     if file_types is None:
         file_types = ['*']
@@ -38,16 +35,16 @@ def searching_all_files(directory_path: Path, file_types: List[str] = None, recu
 
 def list_files_in_files_folder():
     """
-
-    :return:
+    reads data files needed for lottery
+    :return: list of File objects for csv and json files within participants folder
     """
-    return searching_all_files((ROOT / 'files/participants/').resolve(), ['csv', 'json'])
+    return list_files_in_dir((ROOT / 'files/participants/').resolve(), ['csv', 'json'])
 
 
 def select_participants_file():
     """
-
-    :return:
+    promts user to choose 1 object from list of File objects for participants data, File objects are printed in terminal
+    :return: File object
     """
     file_list = list_files_in_files_folder()
     while True:
@@ -56,17 +53,17 @@ def select_participants_file():
             print(f'\t{num}: {file.name}')
 
         try:
-            input_number = int(input('\nWskaż nr pliku z próbą do losowania: ')) - 1
+            input_number = int(input('\nWskaż nr pliku z próbą do losowania: '))
         except ValueError:
             print('\nWskaż poprawny numer!')
             continue
 
-        if input_number < 0 or input_number > len(file_list) - 1:
+        if input_number < 1 or input_number > len(file_list):
             print('\nWskaż poprawny numer!')
             continue
 
-        selected_file = file_list[input_number]
-        print(f'Wybrano plik {input_number + 1}: {selected_file}')
+        selected_file = file_list[input_number - 1]
+        print(f'Wybrano plik {input_number}: {selected_file}')
         return selected_file
 
 

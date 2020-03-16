@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
 
-@dataclass(frozen=True, eq=True)
+@dataclass(frozen=True, eq=True, repr=False, order=True)
 class Participant:
-    id: int
     first_name: str
     last_name: str
+    participant_id: int
 
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
@@ -13,16 +13,7 @@ class Participant:
     def __repr__(self):
         return self.full_name()
 
-    def __gt__(self, other):
-        return self.full_name() + str(self.id) > other.full_name() + str(other.id)
 
-    def __le__(self, other):
-        return self.full_name() + str(self.id) <= other.full_name() + str(other.id)
-
-
-@dataclass(frozen=True, eq=True)
+@dataclass(frozen=True, eq=True, repr=False, order=True)
 class ParticipantWeighed(Participant):
     weight: int = 1
-
-    def get_all_info(self):
-        return f'{super().full_name()}, weight={self.weight}'

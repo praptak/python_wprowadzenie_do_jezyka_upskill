@@ -1,5 +1,6 @@
 import random
 from typing import List, Dict
+from math import fsum
 
 from lottery.participants import ParticipantWeighed, Participant
 
@@ -7,8 +8,10 @@ from lottery.participants import ParticipantWeighed, Participant
 # how many winners in the lottery
 def number_of_winners():
     """
-
-    :return:
+    prompts user to choose number of winning participants
+    number must be a positive integer
+    :raises ValueError when input is not an int
+    :return: int
     """
     while True:
         try:
@@ -27,48 +30,46 @@ def number_of_winners():
 # list with weighed participants ###
 def create_list_with_weighed_participants(participants_data_list: List[Dict]):
     """
-
-    :param participants_data_list:
-    :return:
+    creates list of ParticipantWeighed objects from dictionary
+    :param participants_data_list: List[Dict] - dictionary that contains data about participants
+    :return: List[ParticipantWeighed]
     """
-    return [ParticipantWeighed(**record) for record in participants_data_list]
+    return [ParticipantWeighed(participant_id=record.pop("id"), **record) for record in participants_data_list]
 
 
-# trial list based on weigh ####
+# trial list based on weigh - now it's not needed. Left to show nested comprehension list usage ####
 def create_trial_list(weighed_participants_list: List[ParticipantWeighed]):
     """
-
+    creates list of Participant objects from list of ParticipantWeighed objects, number of objects depends on weigh
+    field value (multiplies Participant object by weigh)
     :param weighed_participants_list:
-    :return:
+    :return: List[Participant]
     """
-    return [Participant(record.id, record.first_name, record.last_name) for record in
+    return [Participant(record.first_name, record.last_name, record.participant_id) for record in
             weighed_participants_list for _ in
             range(int(record.weight))]
 
 
-# set of winners drawn from list, based on given number
-def lottery(participants_list: List[Participant], num: int):
+def lottery(weighed_participants_list: List[ParticipantWeighed], num: int):
     """
+    draws set of winners from ParticipantWeighed objects list
+    :param weighed_participants_list: list of participants with weigh
+    :param num: number of winners - size of set
+    :return: set of ParticipantWeighed objects - winners of lottery
+    """
+    if num >= len(weighed_participants_list):
+        return weighed_participants_list
 
-    :param participants_list:
-    :param num:
-    :return:
-    """
+    temp_weighed_participants = list(weighed_participants_list)
     results = set()
-    # to avoid edge cases
-    if num >= len(set(participants_list)):
-        return set(participants_list)
-
-    temp_sample_list = list(participants_list)
-
     while len(results) < num:
-        random_number = random.randrange(0, len(temp_sample_list))
-        # find participant
-        participant = temp_sample_list[random_number]
-        # add participant to results
+        participant = random.choices(
+            population=temp_weighed_participants,
+            weights=[int(p.weight) for p in temp_weighed_participants]
+        )[0]
+
         results.add(participant)
-        # filter off all participants matching participant from sample list
-        temp_sample_list = [x for x in temp_sample_list if x != participant]
+        temp_weighed_participants.remove(participant)
 
     return results
 
@@ -76,12 +77,12 @@ def lottery(participants_list: List[Participant], num: int):
 # making a lottery!
 def prize_drawing(data, num):
     """
+    calls lottery, sorts and prints it's results
+    :param data: dictionary with participants
+    :param num: number of winners
 
-    :param data:
-    :param num:
-    :return:
     """
-    res = sorted(lottery(create_trial_list(create_list_with_weighed_participants(data)), num))
+    res = sorted(lottery(create_list_with_weighed_participants(data), num))
     print('', 'Wylosowano następujące osoby:', sep='\n')
     for x in res:
         print(f'\t{x}')
