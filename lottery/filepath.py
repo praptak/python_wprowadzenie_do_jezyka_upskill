@@ -31,11 +31,10 @@ def list_files_in_dir(directory_path: Path, file_types: List[str] = None, recurs
             temp_file = f'*.{file_type}'
         file_list.extend(dir_path.glob(temp_file))
 
-    # return [File(num, f.resolve().name, f.resolve()) for num, f in enumerate(sorted(file_list), 1)]
     return [File(f.resolve().name, f.resolve()) for f in sorted(file_list)]
 
 
-def list_files_in_files_folder() -> List['File']:
+def list_participants_files() -> List['File']:
     """
     reads data files needed for lottery
     :return: list of File objects for csv and json files within participants folder
@@ -49,7 +48,7 @@ def select_participants_file() -> 'File':
     for participants data, File objects are printed in terminal
     :return: File object
     """
-    file_list = list_files_in_files_folder()
+    file_list = list_participants_files()
     while True:
         print('Lista plików:')
         for num, file in enumerate(file_list, 1):
