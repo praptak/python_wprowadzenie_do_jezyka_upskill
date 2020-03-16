@@ -5,7 +5,6 @@ from lottery.read_data import read_data
 from lottery.lottery import number_of_winners, prize_drawing
 
 
-
 def main():
     # select file from files folder
     selected_file: File = select_participants_file()
