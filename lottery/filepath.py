@@ -10,12 +10,14 @@ def root():
 ROOT = root()
 
 
-def list_files_in_dir(directory_path: Path, file_types: List[str] = None, recurse: bool = False):
+def list_files_in_dir(directory_path: Path, file_types: List[str] = None, recurse: bool = False) -> List['File']:
     """
     lists recursively (if needed) all files within directory, matching file type suffixes
     :param directory_path: path to directory
-    :param file_types: list of strings - should contain suffixes for searched files, if None, all file types will be listed
-    :param recurse: if true, additionally checks all subdirectories recursively, if false - reads only root folder (directory_path)
+    :param file_types: list of strings - should contain suffixes for searched files,
+    if None, all file types will be listed
+    :param recurse: if true, additionally checks all subdirectories recursively,
+    if false - reads only root folder (directory_path)
     :return: list of File objects
     """
     if file_types is None:
@@ -33,7 +35,7 @@ def list_files_in_dir(directory_path: Path, file_types: List[str] = None, recurs
     return [File(f.resolve().name, f.resolve()) for f in sorted(file_list)]
 
 
-def list_files_in_files_folder():
+def list_files_in_files_folder() -> List['File']:
     """
     reads data files needed for lottery
     :return: list of File objects for csv and json files within participants folder
@@ -41,9 +43,10 @@ def list_files_in_files_folder():
     return list_files_in_dir((ROOT / 'files/participants/').resolve(), ['csv', 'json'])
 
 
-def select_participants_file():
+def select_participants_file() -> 'File':
     """
-    promts user to choose 1 object from list of File objects for participants data, File objects are printed in terminal
+    prompts user to choose 1 object from list of File objects
+    for participants data, File objects are printed in terminal
     :return: File object
     """
     file_list = list_files_in_files_folder()

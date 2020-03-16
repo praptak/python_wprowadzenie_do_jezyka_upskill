@@ -1,9 +1,10 @@
 import csv
 import json
 from pathlib import Path
+from typing import Dict, List
 
 
-def read_json(path):
+def read_json(path) -> List[Dict]:
     """
     converts json file to list of dictionaries
     :param path: absolute path to file
@@ -13,7 +14,7 @@ def read_json(path):
         return json.load(json_file)
 
 
-def read_csv(path):
+def read_csv(path) -> List[Dict]:
     """
    converts csv file to list of dictionaries
    :param path: absolute path to file
@@ -23,7 +24,7 @@ def read_csv(path):
         return [row for row in csv.DictReader(csv_file, skipinitialspace=True)]
 
 
-def read_data(path: Path):
+def read_data(path: Path) -> List[Dict]:
     """
     converts data from file to list of dictionaries depending on file type
     if file type is not csv nor json, a TypeError is raised

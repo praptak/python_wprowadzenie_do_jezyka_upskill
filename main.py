@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from lottery.filepath import select_participants_file, File
 from lottery.read_data import read_data
@@ -13,7 +13,7 @@ def main():
     winners_number: int = number_of_winners()
 
     # read file
-    data: Dict = read_data(selected_file.full_path)
+    data: List[Dict] = read_data(selected_file.full_path)
 
     # lottery
     prize_drawing(data, winners_number)

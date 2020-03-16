@@ -1,11 +1,11 @@
 import random
-from typing import List, Dict
+from typing import List, Dict, Set
 
 from lottery.participants import ParticipantWeighed, Participant
 
 
 # how many winners in the lottery
-def number_of_winners():
+def number_of_winners() -> int:
     """
     prompts user to choose number of winning participants
     number must be a positive integer
@@ -27,7 +27,7 @@ def number_of_winners():
 
 
 # list with weighed participants ###
-def create_list_with_weighed_participants(participants_data_list: List[Dict]):
+def create_list_with_weighed_participants(participants_data_list: List[Dict]) -> List[ParticipantWeighed]:
     """
     creates list of ParticipantWeighed objects from dictionary
     :param participants_data_list: List[Dict] - dictionary that contains data about participants
@@ -37,7 +37,7 @@ def create_list_with_weighed_participants(participants_data_list: List[Dict]):
 
 
 # trial list based on weigh - now it's not needed. Left to show nested comprehension list usage ####
-def create_trial_list(weighed_participants_list: List[ParticipantWeighed]):
+def create_trial_list(weighed_participants_list: List[ParticipantWeighed]) -> List[Participant]:
     """
     creates list of Participant objects from list of ParticipantWeighed objects, number of objects depends on weigh
     field value (multiplies Participant object by weigh)
@@ -49,7 +49,7 @@ def create_trial_list(weighed_participants_list: List[ParticipantWeighed]):
             range(int(record.weight))]
 
 
-def lottery(weighed_participants_list: List[ParticipantWeighed], num: int):
+def lottery(weighed_participants_list: List[ParticipantWeighed], num: int) -> Set[Participant]:
     """
     draws set of winners from ParticipantWeighed objects list
     :param weighed_participants_list: list of participants with weigh
@@ -57,10 +57,10 @@ def lottery(weighed_participants_list: List[ParticipantWeighed], num: int):
     :return: set of ParticipantWeighed objects - winners of lottery
     """
     if num >= len(weighed_participants_list):
-        return weighed_participants_list
+        return set(weighed_participants_list)
 
     temp_weighed_participants = list(weighed_participants_list)
-    results = set()
+    results: Set[Participant] = set()
     while len(results) < num:
         participant = random.choices(
             population=temp_weighed_participants,
@@ -74,7 +74,7 @@ def lottery(weighed_participants_list: List[ParticipantWeighed], num: int):
 
 
 # making a lottery!
-def prize_drawing(data, num):
+def prize_drawing(data, num) -> None:
     """
     calls lottery, sorts and prints it's results
     :param data: dictionary with participants
