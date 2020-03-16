@@ -1,6 +1,5 @@
 import random
 from typing import List, Dict
-from math import fsum
 
 from lottery.participants import ParticipantWeighed, Participant
 

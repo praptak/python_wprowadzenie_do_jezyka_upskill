@@ -21,7 +21,7 @@ def list_files_in_dir(directory_path: Path, file_types: List[str] = None, recurs
     if file_types is None:
         file_types = ['*']
     dir_path = Path(directory_path)
-    file_list: List[File] = []
+    file_list = list()
     for file_type in file_types:
         if recurse:
             temp_file = f'**/*.{file_type}'
