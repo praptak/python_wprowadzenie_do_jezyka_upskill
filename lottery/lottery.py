@@ -9,7 +9,6 @@ def number_of_winners() -> int:
     """
     prompts user to choose number of winning participants
     number must be a positive integer
-    :raises ValueError when input is not an int
     :return: int
     """
     while True:
