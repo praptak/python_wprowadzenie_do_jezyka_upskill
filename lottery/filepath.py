@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 
 def root():
@@ -10,7 +10,19 @@ def root():
 ROOT = root()
 
 
-def list_files_in_dir(directory_path: Path, file_types: List[str] = None, recurse: bool = False) -> List['File']:
+@dataclass(frozen=True)
+class File:
+    name: str
+    full_path: Path
+
+    def __str__(self):
+        return self.name
+
+
+def list_files_in_dir(
+        directory_path: Path,
+        file_types: Optional[List[str]] = None,
+        recurse: bool = False) -> List[File]:
     """
     lists recursively (if needed) all files within directory, matching file type suffixes
     :param directory_path: path to directory
@@ -34,7 +46,7 @@ def list_files_in_dir(directory_path: Path, file_types: List[str] = None, recurs
     return [File(f.resolve().name, f.resolve()) for f in sorted(file_list)]
 
 
-def list_participants_files() -> List['File']:
+def list_participants_files() -> List[File]:
     """
     reads data files needed for lottery
     :return: list of File objects for csv and json files within participants folder
@@ -42,7 +54,7 @@ def list_participants_files() -> List['File']:
     return list_files_in_dir((ROOT / 'files/participants/').resolve(), ['csv', 'json'])
 
 
-def select_participants_file() -> 'File':
+def select_participants_file() -> File:
     """
     prompts user to choose 1 object from list of File objects
     for participants data, File objects are printed in terminal
@@ -67,12 +79,3 @@ def select_participants_file() -> 'File':
         selected_file = file_list[input_number - 1]
         print(f'Wybrano plik {input_number}: {selected_file}')
         return selected_file
-
-
-@dataclass(frozen=True)
-class File:
-    name: str
-    full_path: Path
-
-    def __repr__(self):
-        return self.name
