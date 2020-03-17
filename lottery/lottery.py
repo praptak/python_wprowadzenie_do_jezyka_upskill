@@ -57,7 +57,7 @@ def lottery(weighed_participants_list: List[ParticipantWeighed], num: int) -> Li
     return results
 
 
-def prize_drawing(data, num) -> None:
+def prize_drawing(data: List[Dict], num: int) -> None:
     """
     calls lottery, sorts and prints it's results
     :param data: dictionary with participants

@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Dict, List
 
 
-def read_json(path) -> List[Dict]:
+def read_json(path: str) -> List[Dict]:
     """
     converts json file to list of dictionaries
     :param path: absolute path to file
@@ -14,7 +14,7 @@ def read_json(path) -> List[Dict]:
         return json.load(json_file)
 
 
-def read_csv(path) -> List[Dict]:
+def read_csv(path: str) -> List[Dict]:
     """
    converts csv file to list of dictionaries
    :param path: absolute path to file
@@ -31,11 +31,10 @@ def read_data(path: Path) -> List[Dict]:
     :param path: absolute path to file
     :return: List[Dict]
     """
-    # suffix = str(path).split('.')[-1].lower()
     suffix = path.suffix.lower()
     if suffix == '.csv':
-        return read_csv(path)
+        return read_csv(str(path))
     elif suffix == '.json':
-        return read_json(path)
+        return read_json(str(path))
     else:
         raise TypeError('Wrong file type provided')
