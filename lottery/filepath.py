@@ -54,28 +54,41 @@ def list_participants_files() -> List[File]:
     return list_files_in_dir((ROOT / 'files/participants/').resolve(), ['csv', 'json'])
 
 
-def select_participants_file() -> File:
+def select_participants_file(file_name: str) -> File:
     """
-    prompts user to choose 1 object from list of File objects
-    for participants data, File objects are printed in terminal
-    :return: File object
+
+    :param file_name:
+    :return:
     """
     file_list = list_participants_files()
-    while True:
-        print('Lista plików:')
-        for num, file in enumerate(file_list, 1):
-            print(f'\t{num}: {file.name}')
 
-        try:
-            input_number = int(input('\nWskaż nr pliku z próbą do losowania: '))
-        except ValueError:
-            print('\nWskaż poprawny numer!')
-            continue
+    if not any(file.name.lower() == file_name.lower() for file in file_list):
+        raise OSError(2, 'No such file or directory', file_name)
 
-        if input_number < 1 or input_number > len(file_list):
-            print('\nWskaż poprawny numer!')
-            continue
+    return next(file for file in file_list if file.name == file_name)
 
-        selected_file = file_list[input_number - 1]
-        print(f'Wybrano plik {input_number}: {selected_file}')
-        return selected_file
+# def select_participants_file() -> File:
+#     """
+#     prompts user to choose 1 object from list of File objects
+#     for participants data, File objects are printed in terminal
+#     :return: File object
+#     """
+#     file_list = list_participants_files()
+#     while True:
+#         print('Lista plików:')
+#         for num, file in enumerate(file_list, 1):
+#             print(f'\t{num}: {file.name}')
+#
+#         try:
+#             input_number = int(input('\nWskaż nr pliku z próbą do losowania: '))
+#         except ValueError:
+#             print('\nWskaż poprawny numer!')
+#             continue
+#
+#         if input_number < 1 or input_number > len(file_list):
+#             print('\nWskaż poprawny numer!')
+#             continue
+#
+#         selected_file = file_list[input_number - 1]
+#         print(f'Wybrano plik {input_number}: {selected_file}')
+#         return selected_file
