@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 
 
 def root():
@@ -92,17 +92,18 @@ def get_participants_file(file_name: str) -> File:
     return next(file for file in participants_files_list if file.name == file_name)
 
 
-def get_lottery_file(file_name: str = "") -> File:
+def get_lottery_file(file_description: Union[str, int] = 0) -> File:
     """
     searches for file with lottery template data in lottery_templates folder matching it's name with
     param value provided.
     If no file_name param provided, the first file from folder (in alphabetical order) is returned
-    :param file_name: str
+    :param file_description: str or int
     :return: File object
     """
+
     lottery_templates_folder: Path = (ROOT / 'files/lottery_templates/').resolve()
     lottery_files_list: List[File] = list_files_in_dir(lottery_templates_folder, ['json'])
-    if len(file_name) == 0:
-        return lottery_files_list[0]
+    if isinstance(file_description, int):
+        return lottery_files_list[file_description]
 
-    return next(file for file in lottery_files_list if file.name == file_name)
+    return next(file for file in lottery_files_list if file.name == file_description)

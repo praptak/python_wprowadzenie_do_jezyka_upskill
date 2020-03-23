@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List, Dict
 
 
 @dataclass(frozen=True, eq=True, repr=False, order=True)
@@ -17,3 +18,12 @@ class Participant:
 @dataclass(frozen=True, eq=True, repr=False, order=True)
 class ParticipantWeighed(Participant):
     weight: int = 1
+
+
+def create_list_with_weighed_participants(participants_data_list: List[Dict]) -> List[ParticipantWeighed]:
+    """
+    creates list of ParticipantWeighed objects from dictionary
+    :param participants_data_list: List[Dict] - dictionary that contains data about participants
+    :return: List[ParticipantWeighed]
+    """
+    return [ParticipantWeighed(participant_id=record.pop("id"), **record) for record in participants_data_list]
