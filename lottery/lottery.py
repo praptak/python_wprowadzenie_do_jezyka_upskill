@@ -76,7 +76,7 @@ class LotteryResults:
 
 
 @dataclass(frozen=False, eq=True, repr=False, order=True)
-class Lottery(object):
+class Lottery:
     lottery_template: LotteryTemplate
     participants: List[ParticipantWeighed]
     save_path: Optional[Path] = None
