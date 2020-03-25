@@ -1,13 +1,22 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Optional
+import sys, errno
 
 
-def root():
+def root() -> Path:
     return Path(__file__).parent.parent.resolve()
 
 
 ROOT = root()
+
+
+def get_participants_folder() -> Path:
+    return (ROOT / 'files/participants/').resolve()
+
+
+def get_lottery_templates_folder() -> Path:
+    return (ROOT / 'files/lottery_templates/').resolve()
 
 
 @dataclass(frozen=True)
@@ -46,64 +55,54 @@ def list_files_in_dir(
     return [File(f.resolve().name, f.resolve()) for f in sorted(file_list)]
 
 
-# def list_participants_files() -> List[File]:
-#     """
-#     reads data files needed for lottery
-#     :return: list of File objects for csv and json files within participants folder
-#     """
-#     return list_files_in_dir((ROOT / 'files/participants/').resolve(), ['csv', 'json'])
-
-
-# def select_participants_file() -> File:
-#     """
-#     prompts user to choose 1 object from list of File objects
-#     for participants data, File objects are printed in terminal
-#     :return: File object
-#     """
-#     file_list = list_participants_files()
-#     while True:
-#         print('Lista plików:')
-#         for num, file in enumerate(file_list, 1):
-#             print(f'\t{num}: {file.name}')
-#
-#         try:
-#             input_number = int(input('\nWskaż nr pliku z próbą do losowania: '))
-#         except ValueError:
-#             print('\nWskaż poprawny numer!')
-#             continue
-#
-#         if input_number < 1 or input_number > len(file_list):
-#             print('\nWskaż poprawny numer!')
-#             continue
-#
-#         selected_file = file_list[input_number - 1]
-#         print(f'Wybrano plik {input_number}: {selected_file}')
-#         return selected_file
-
-
 def get_participants_file(file_name: str) -> File:
     """
     searches for file with participants data in participants folder matching it's name with param value provided
     :param file_name: str
     :return: File object matching file_name name
     """
-    participants_folder: Path = (ROOT / 'files/participants/').resolve()
-    participants_files_list: List[File] = list_files_in_dir(participants_folder)
-    return next(file for file in participants_files_list if file.name == file_name)
+
+    matching_files_list: List[Path] = list(get_participants_folder().glob(file_name))
+    if len(matching_files_list) == 0:
+        print(f'File {file_name} not found!')
+        sys.exit(errno.ENODATA)
+
+    matching_file = matching_files_list[0]
+    return File(matching_file.resolve().name, matching_file.resolve())
 
 
-def get_lottery_file(file_description: Union[str, int] = 0) -> File:
+def list_participants_files() -> List[File]:
+    """
+    returns data files needed for lottery from participants folder
+    :return: List[File]
+    """
+
+    return list_files_in_dir(get_participants_folder())
+
+
+def get_lottery_file(file_name: str = None) -> File:
     """
     searches for file with lottery template data in lottery_templates folder matching it's name with
     param value provided.
     If no file_name param provided, the first file from folder (in alphabetical order) is returned
-    :param file_description: str or int
-    :return: File object
+    :param file_name: str
+    :return: File
     """
 
-    lottery_templates_folder: Path = (ROOT / 'files/lottery_templates/').resolve()
-    lottery_files_list: List[File] = list_files_in_dir(lottery_templates_folder, ['json'])
-    if isinstance(file_description, int):
-        return lottery_files_list[file_description]
+    lottery_files_list: List[File] = list_lottery_files()
+    if file_name is None:
+        return lottery_files_list[0]
+    try:
+        return next(file for file in lottery_files_list if file.name == file_name)
+    except StopIteration:
+        print(f'File {file_name} not found!')
+        sys.exit(errno.ENODATA)
 
-    return next(file for file in lottery_files_list if file.name == file_description)
+
+def list_lottery_files() -> List[File]:
+    """
+    presents list of file within lottery_templates directory
+    :return: List[File]
+    """
+
+    return list_files_in_dir(get_lottery_templates_folder(), ['json'])

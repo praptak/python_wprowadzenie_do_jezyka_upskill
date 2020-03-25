@@ -2,7 +2,7 @@ from typing import Dict, List
 
 import click
 
-from lottery.filepath import get_lottery_file, get_participants_file
+from lottery.filepath import get_lottery_file, get_participants_file, list_lottery_files
 from lottery.lottery import Lottery, LotteryTemplate
 from lottery.participants import create_list_with_weighed_participants
 from lottery.read_data import read_data
@@ -10,9 +10,9 @@ from lottery.read_data import read_data
 
 @click.command()
 @click.argument('participants')
-@click.option('--participants_format', '-f', default='json')
-@click.option('--lottery_template', '-l',  default=0)
-@click.option('--results_path', required=False,
+@click.option('--participants_format', '-f', type=click.Choice(['json', 'csv']), default='json')
+@click.option('--lottery_template', '-l', required=False, type=click.Choice([f.name for f in list_lottery_files()]))
+@click.option('--results_path', '-r', required=False,
               help='To save lottery results, provide path to file',
               default=None)
 def main(participants, participants_format, lottery_template, results_path):
