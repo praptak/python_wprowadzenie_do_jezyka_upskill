@@ -10,13 +10,10 @@ from lottery.read_data import read_data
 
 @click.command()
 @click.argument('participants')
-@click.option('--participants_format', '-f', default='json',
-              type=click.Choice(['json', 'csv'], case_sensitive=False),
-              show_default=True, show_choices=True)
-@click.option('--lottery_template', type=(str, int), default=0)
+@click.option('--participants_format', '-f', default='json')
+@click.option('--lottery_template', '-l',  default=0)
 @click.option('--results_path', required=False,
               help='To save lottery results, provide path to file',
-              resolve_path=True,
               default=None)
 def main(participants, participants_format, lottery_template, results_path):
     lottery_template_data: Dict = read_data(get_lottery_file(lottery_template).full_path)
