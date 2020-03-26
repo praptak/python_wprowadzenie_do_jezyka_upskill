@@ -15,7 +15,17 @@ from lottery.read_data import read_data
 @click.option('--results_path', '-r', required=False,
               help='To save lottery results, provide path to file',
               default=None)
-def main(participants, participants_format, lottery_template, results_path):
+def main(participants, participants_format, lottery_template, results_path) -> None:
+    """
+    draws alphabetically sorted winners for lottery and presents results to screen output and, optionally - to json output
+
+    :param participants: str - name of file with participants data
+    :param participants_format: str - type of file witth participants data
+    :param lottery_template: str - name of file with lottery_template, if not provided, then first
+    found lottery_template is used
+    :param results_path: str - path to file with results to be saved. If not provided, no file is generated
+    :return: None
+    """
     lottery_template_data: Dict = read_data(get_lottery_file(lottery_template).full_path)
     participants_data: List[Dict] = read_data(get_participants_file(f'{participants}.{participants_format}').full_path)
 

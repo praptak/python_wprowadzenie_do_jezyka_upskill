@@ -65,7 +65,7 @@ def get_participants_file(file_name: str) -> File:
 
     matching_files_list: List[Path] = list(get_participants_folder().glob(file_name))
     if len(matching_files_list) == 0:
-        print(f'File {file_name} not found!')
+        print(f'Participants data file {file_name} not found!')
         sys.exit(errno.ENODATA)
 
     matching_file = matching_files_list[0]
@@ -96,7 +96,7 @@ def get_lottery_file(file_name: str = None) -> File:
     try:
         return next(file for file in lottery_files_list if file.name == file_name)
     except StopIteration:
-        print(f'File {file_name} not found!')
+        print(f'Lottery template data file {file_name} not found!')
         sys.exit(errno.ENODATA)
 
 

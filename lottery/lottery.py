@@ -46,6 +46,8 @@ class LotteryResults:
         :return: lottery results from __show_results method
         """
 
+        self.__sort_results()
+
         if file_path is not None:
             self.__save_results(file_path)
 
@@ -59,7 +61,7 @@ class LotteryResults:
         str_results = f'Lottery: {self.lottery_name}'
         for res in self.results:
             str_results += f'\n\tWinner(s) of {res.prize}:'
-            for winner in sorted(res.winners):
+            for winner in res.winners:
                 str_results += f'\n\t\t{winner}'
 
         return str_results
@@ -70,9 +72,17 @@ class LotteryResults:
         :param file_path: where to save data
         :return:
         """
-        json_str = json.dumps(self, default=lambda o: o.__dict__, indent=2)
+        json_str = json.dumps(self, default=lambda o: o.__dict__, indent=2, sort_keys=True)
         with open(str(file_path), 'w') as file:
             file.write(json_str)
+
+    def __sort_results(self) -> None:
+        """
+        sorts list of winners for each prize
+        :return:
+        """
+        for result in self.results:
+            result.winners.sort()
 
 
 @dataclass(frozen=False, eq=True, repr=False, order=True)
@@ -89,6 +99,11 @@ class Lottery:
 
     def __lottery(self):
         """
+        iterates through lottery prizes collection in lottery_template.
+        draws list of winners for each list of prize in collection depending on available amount of prize
+        during the lottery process, __remaining_participants list is used. If participants wins a prize, he/she will be
+        removed from __remaining_participants. The list is used for further lottery process until all winners are drawed
+
 
         :return:
         """
@@ -121,6 +136,8 @@ class Lottery:
     def show(self) -> str:
         """
         returns lottery results as string and optionally to json file
-        :return:
+        results will be saved in json format only if save_path field targets the file
+        all lists of winners for each prize is sorted alphabetically
+        :return: str - formatted multiline string with lottery results
         """
         return self.__lottery_results.present_results(self.save_path)
