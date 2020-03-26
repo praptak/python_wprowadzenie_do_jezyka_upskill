@@ -10,21 +10,31 @@ from lottery.read_data import read_data
 
 @click.command()
 @click.argument('participants')
-@click.option('--participants_format', '-f', type=click.Choice(['json', 'csv']), default='json')
-@click.option('--lottery_template', '-l', required=False, type=click.Choice([f.name for f in list_lottery_files()]))
-@click.option('--results_path', '-r', required=False,
-              help='To save lottery results, provide path to file',
-              default=None)
+@click.option(
+    '--participants_format', '-f',
+    help=f'Choose participants file data type from list. If not provided, \'json\' type will be chosen.',
+    type=click.Choice(['json', 'csv']),
+    default='json'
+)
+@click.option(
+    '--lottery_template', '-l',
+    help='Choose lottery template from list. '
+         'If not provided, first (in alphabetically order) will be chosen',
+    required=False,
+    type=click.Choice([f.name for f in list_lottery_files()])
+)
+@click.option(
+    '--results_path', '-r',
+    required=False,
+    type=click.Path(exists=False, file_okay=True, writable=True),
+    help='To save lottery results, provide path to file. '
+         'If not provided, file will not be generated',
+    default=None
+)
 def main(participants, participants_format, lottery_template, results_path) -> None:
     """
-    draws alphabetically sorted winners for lottery and presents results to screen output and, optionally - to json output
-
-    :param participants: str - name of file with participants data
-    :param participants_format: str - type of file witth participants data
-    :param lottery_template: str - name of file with lottery_template, if not provided, then first
-    found lottery_template is used
-    :param results_path: str - path to file with results to be saved. If not provided, no file is generated
-    :return: None
+    Based on participants data draws alphabetically sorted winners for lottery
+    and presents results to screen output and, optionally - to json file
     """
     lottery_template_data: Dict = read_data(get_lottery_file(lottery_template).full_path)
     participants_data: List[Dict] = read_data(get_participants_file(f'{participants}.{participants_format}').full_path)
