@@ -118,7 +118,7 @@ class Lottery:
 
                 participant: ParticipantWeighed = random.choices(
                     population=self.__remaining_participants,
-                    weights=[int(p.weight) for p in self.__remaining_participants]
+                    weights=[p.weight for p in self.__remaining_participants]
                 )[0]
 
                 self.__remaining_participants.remove(participant)
