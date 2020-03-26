@@ -35,6 +35,7 @@ def main(participants, participants_format, lottery_template, results_path) -> N
     """
     Based on participants data draws alphabetically sorted winners for lottery
     and presents results to screen output and, optionally - to json file
+    PARTICIPANTS argument targets filename (without suffix) of file with participants data.
     """
     lottery_template_data: Dict = read_data(get_lottery_file(lottery_template).full_path)
     participants_data: List[Dict] = read_data(get_participants_file(f'{participants}.{participants_format}').full_path)
