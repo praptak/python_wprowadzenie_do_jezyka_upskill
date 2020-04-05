@@ -58,15 +58,6 @@ def get_participants_file(file_name: str) -> File:
     return File(matching_file.resolve().name, matching_file.resolve())
 
 
-def list_participants_files() -> List[File]:
-    """
-    returns data files needed for lottery from participants folder
-    :return: List[File]
-    """
-
-    return list_files_in_dir(PARTICIPANTS_FOLDER)
-
-
 def gen_lottery_files() -> Generator[File, None, None]:
     """
     as generator iterates through files within lottery_templates directory
