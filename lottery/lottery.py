@@ -46,14 +46,14 @@ class LotteryResults:
         :return: lottery results from __show_results method
         """
 
-        self.__sort_results()
+        self._sort_results()
 
         if file_path is not None:
-            self.__save_results(file_path)
+            self._save_results(file_path)
 
-        return self.__show_results()
+        return self._show_results()
 
-    def __show_results(self) -> str:
+    def _show_results(self) -> str:
         """
         iterates through each lottery prizes results and returns all prizes and prize winners
         :return: str_results
@@ -66,7 +66,7 @@ class LotteryResults:
 
         return str_results
 
-    def __save_results(self, file_path: Path) -> None:
+    def _save_results(self, file_path: Path) -> None:
         """
         saves lottery results into json file
         :param file_path: where to save data
@@ -76,7 +76,7 @@ class LotteryResults:
         with open(str(file_path), 'w') as file:
             file.write(json_str)
 
-    def __sort_results(self) -> None:
+    def _sort_results(self) -> None:
         """
         sorts list of winners for each prize
         :return:
@@ -85,24 +85,27 @@ class LotteryResults:
             result.winners.sort()
 
 
-@dataclass(frozen=False, eq=True, repr=False, order=True)
 class Lottery:
     lottery_template: LotteryTemplate
     participants: List[ParticipantWeighed]
     save_path: Optional[Path] = None
-    __lottery_results: LotteryResults = field(init=False)
-    __remaining_participants: List[ParticipantWeighed] = field(init=False)
+    _lottery_results: LotteryResults = field(init=False)
+    _remaining_participants: List[ParticipantWeighed] = field(init=False)
 
-    def __post_init__(self):
-        self.__remaining_participants = self.participants
-        self.__lottery_results = LotteryResults(self.lottery_template.name, list())
+    def __init__(self, lottery_template: LotteryTemplate, participants: List[ParticipantWeighed],
+                 save_path: Optional[Path] = None):
+        self.lottery_template = lottery_template
+        self.participants = participants
+        self.save_path = save_path
+        self._remaining_participants = self.participants
+        self._lottery_results = LotteryResults(self.lottery_template.name, list())
 
-    def __lottery(self):
+    def _lottery(self):
         """
         iterates through lottery prizes collection in lottery_template.
         draws list of winners for each list of prize in collection depending on available amount of prize
         during the lottery process, __remaining_participants list is used. If participants wins a prize, he/she will be
-        removed from __remaining_participants. The list is used for further lottery process until all winners are drawed
+        removed from __remaining_participants. The list is used for further lottery process until all winners are drown
 
 
         :return:
@@ -111,33 +114,33 @@ class Lottery:
             prize_winners = PrizeWinners(prize, list())
 
             while len(prize_winners.winners) < prize_winners.prize.amount:
-                if prize_winners.prize.amount >= len(self.__remaining_participants):
-                    prize_winners.winners.extend(self.__remaining_participants)
-                    self.__remaining_participants.clear()
+                if prize_winners.prize.amount >= len(self._remaining_participants):
+                    prize_winners.winners.extend(self._remaining_participants)
+                    self._remaining_participants.clear()
                     break
 
                 participant: ParticipantWeighed = random.choices(
-                    population=self.__remaining_participants,
-                    weights=[p.weight for p in self.__remaining_participants]
+                    population=self._remaining_participants,
+                    weights=[p.weight for p in self._remaining_participants]
                 )[0]
 
-                self.__remaining_participants.remove(participant)
+                self._remaining_participants.remove(participant)
                 prize_winners.winners.append(participant)
 
-            self.__lottery_results.results.append(prize_winners)
+            self._lottery_results.results.append(prize_winners)
 
     def draw(self) -> None:
         """
         calls lottery depending on participants list and lottery_template
         :return:
         """
-        self.__lottery()
+        self._lottery()
 
     def show(self) -> str:
         """
         returns lottery results as string and optionally to json file
         results will be saved in json format only if save_path field targets the file
         all lists of winners for each prize is sorted alphabetically
-        :return: str - formatted multiline string with lottery results
+        :return: str - formatted multi-line string with lottery results
         """
-        return self.__lottery_results.present_results(self.save_path)
+        return self._lottery_results.present_results(self.save_path)

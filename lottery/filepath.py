@@ -1,23 +1,10 @@
-import errno
-import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Generator
 
-
-def root() -> Path:
-    return Path(__file__).parent.parent.resolve()
-
-
-ROOT = root()
-
-
-def get_participants_folder() -> Path:
-    return (ROOT / 'files/participants/').resolve()
-
-
-def get_lottery_templates_folder() -> Path:
-    return (ROOT / 'files/lottery_templates/').resolve()
+ROOT = Path(__file__).parent.parent.resolve()
+PARTICIPANTS_FOLDER = (ROOT / 'files/participants/').resolve()
+LOTTERY_TEMPLATES_FOLDER = (ROOT / 'files/lottery_templates/').resolve()
 
 
 @dataclass(frozen=True)
@@ -63,10 +50,9 @@ def get_participants_file(file_name: str) -> File:
     :return: File object matching file_name name
     """
 
-    matching_files_list: List[Path] = list(get_participants_folder().glob(file_name))
+    matching_files_list: List[Path] = list(PARTICIPANTS_FOLDER.glob(file_name))
     if len(matching_files_list) == 0:
-        print(f'Participants data file {file_name} not found!')
-        sys.exit(errno.ENODATA)
+        raise FileNotFoundError(f'Participants data file {file_name} not found!')
 
     matching_file = matching_files_list[0]
     return File(matching_file.resolve().name, matching_file.resolve())
@@ -78,7 +64,17 @@ def list_participants_files() -> List[File]:
     :return: List[File]
     """
 
-    return list_files_in_dir(get_participants_folder())
+    return list_files_in_dir(PARTICIPANTS_FOLDER)
+
+
+def gen_lottery_files() -> Generator[File, None, None]:
+    """
+    as generator iterates through files within lottery_templates directory
+    :return: yields File
+    """
+
+    for file in list_files_in_dir(LOTTERY_TEMPLATES_FOLDER, ['json']):
+        yield file
 
 
 def get_lottery_file(file_name: str = None) -> File:
@@ -90,20 +86,6 @@ def get_lottery_file(file_name: str = None) -> File:
     :return: File
     """
 
-    lottery_files_list: List[File] = list_lottery_files()
     if file_name is None:
-        return lottery_files_list[0]
-    try:
-        return next(file for file in lottery_files_list if file.name == file_name)
-    except StopIteration:
-        print(f'Lottery template data file {file_name} not found!')
-        sys.exit(errno.ENODATA)
-
-
-def list_lottery_files() -> List[File]:
-    """
-    presents list of file within lottery_templates directory
-    :return: List[File]
-    """
-
-    return list_files_in_dir(get_lottery_templates_folder(), ['json'])
+        return next(gen_lottery_files())
+    return next(file for file in gen_lottery_files() if file.name == file_name)

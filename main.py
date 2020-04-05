@@ -2,7 +2,7 @@ from typing import Dict, List
 
 import click
 
-from lottery.filepath import get_lottery_file, get_participants_file, list_lottery_files
+from lottery.filepath import get_lottery_file, get_participants_file, gen_lottery_files
 from lottery.lottery import Lottery, LotteryTemplate
 from lottery.participants import create_list_with_weighed_participants
 from lottery.read_data import read_data
@@ -21,7 +21,7 @@ from lottery.read_data import read_data
     help='Choose lottery template from list. '
          'If not provided, first (in alphabetically order) will be chosen',
     required=False,
-    type=click.Choice([f.name for f in list_lottery_files()])
+    type=click.Choice([f.name for f in gen_lottery_files()])
 )
 @click.option(
     '--results_path', '-r',
@@ -37,17 +37,23 @@ def main(participants, participants_format, lottery_template, results_path) -> N
     and presents results to screen output and, optionally - to json file
     PARTICIPANTS argument targets filename (without suffix) of file with participants data.
     """
-    lottery_template_data: Dict = read_data(get_lottery_file(lottery_template).full_path)
-    participants_data: List[Dict] = read_data(get_participants_file(f'{participants}.{participants_format}').full_path)
+    try:
+        lottery_template_data: Dict = read_data(get_lottery_file(lottery_template).full_path)
+        participants_data: List[Dict] = read_data(
+            get_participants_file(f'{participants}.{participants_format}').full_path)
 
-    lottery = Lottery(
-        LotteryTemplate.from_dict(lottery_template_data),
-        create_list_with_weighed_participants(participants_data),
-        results_path
-    )
+        lottery = Lottery(
+            LotteryTemplate.from_dict(lottery_template_data),
+            create_list_with_weighed_participants(participants_data),
+            results_path
+        )
 
-    lottery.draw()
-    print(lottery.show())
+        lottery.draw()
+        click.echo(lottery.show())
+    except FileNotFoundError as e:
+        click.echo(e)
+    except Exception as e:
+        click.echo(f'Unexpected error: {e}')
 
 
 if __name__ == '__main__':
