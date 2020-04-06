@@ -86,12 +86,6 @@ class LotteryResults:
 
 
 class Lottery:
-    lottery_template: LotteryTemplate
-    participants: List[ParticipantWeighed]
-    save_path: Optional[Path] = None
-    _lottery_results: LotteryResults = field(init=False)
-    _remaining_participants: List[ParticipantWeighed] = field(init=False)
-
     def __init__(self, lottery_template: LotteryTemplate, participants: List[ParticipantWeighed],
                  save_path: Optional[Path] = None):
         self.lottery_template = lottery_template
