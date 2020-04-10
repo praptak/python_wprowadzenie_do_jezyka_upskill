@@ -2,7 +2,7 @@ from typing import Dict, List
 
 import click
 
-from lottery.filepath import get_lottery_file, get_participants_file, gen_lottery_files
+from lottery.filepath import get_lottery_file, get_participants_file
 from lottery.lottery import Lottery, LotteryTemplate
 from lottery.participants import create_list_with_weighed_participants
 from lottery.read_data import read_data

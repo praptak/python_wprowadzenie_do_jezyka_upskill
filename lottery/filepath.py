@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Generator
+from typing import Generator
 
 ROOT = Path(__file__).parent.parent
 PARTICIPANTS_FOLDER = (ROOT / 'files/participants/')
