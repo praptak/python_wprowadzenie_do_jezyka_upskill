@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Generator
 
-ROOT = Path(__file__).parent.parent.resolve()
-PARTICIPANTS_FOLDER = (ROOT / 'files/participants/').resolve()
-LOTTERY_TEMPLATES_FOLDER = (ROOT / 'files/lottery_templates/').resolve()
+ROOT = Path(__file__).parent.parent
+PARTICIPANTS_FOLDER = (ROOT / 'files/participants/')
+LOTTERY_TEMPLATES_FOLDER = (ROOT / 'files/lottery_templates/')
 
 
 @dataclass(frozen=True)
@@ -15,32 +15,8 @@ class File:
     def __str__(self):
         return self.name
 
-
-def list_files_in_dir(
-        directory_path: Path,
-        file_types: Optional[List[str]] = None,
-        recurse: bool = False) -> List[File]:
-    """
-    lists recursively (if needed) all files within directory, matching file type suffixes
-    :param directory_path: path to directory
-    :param file_types: list of strings - should contain suffixes for searched files,
-    if None, all file types will be listed
-    :param recurse: if true, additionally checks all subdirectories recursively,
-    if false - reads only root folder (directory_path)
-    :return: list of File objects
-    """
-    if file_types is None:
-        file_types = ['*']
-    dir_path = Path(directory_path)
-    file_list = list()
-    for file_type in file_types:
-        if recurse:
-            temp_file = f'**/*.{file_type}'
-        else:
-            temp_file = f'*.{file_type}'
-        file_list.extend(dir_path.glob(temp_file))
-
-    return [File(f.resolve().name, f.resolve()) for f in sorted(file_list)]
+    def exists(self):
+        return self.full_path.exists()
 
 
 def get_participants_file(file_name: str) -> File:
@@ -50,12 +26,12 @@ def get_participants_file(file_name: str) -> File:
     :return: File object matching file_name name
     """
 
-    matching_files_list: List[Path] = list(PARTICIPANTS_FOLDER.glob(file_name))
-    if len(matching_files_list) == 0:
+    file: File = File(file_name, PARTICIPANTS_FOLDER / file_name)
+
+    if not file.exists():
         raise FileNotFoundError(f'Participants data file {file_name} not found!')
 
-    matching_file = matching_files_list[0]
-    return File(matching_file.resolve().name, matching_file.resolve())
+    return file
 
 
 def gen_lottery_files() -> Generator[File, None, None]:
@@ -64,8 +40,8 @@ def gen_lottery_files() -> Generator[File, None, None]:
     :return: yields File
     """
 
-    for file in list_files_in_dir(LOTTERY_TEMPLATES_FOLDER, ['json']):
-        yield file
+    for f in sorted(LOTTERY_TEMPLATES_FOLDER.glob('*.json')):
+        yield File(f.resolve().name, f.resolve())
 
 
 def get_lottery_file(file_name: str = None) -> File:
@@ -76,7 +52,13 @@ def get_lottery_file(file_name: str = None) -> File:
     :param file_name: str
     :return: File
     """
+    try:
+        if file_name is None:
+            return next(gen_lottery_files())
+    except StopIteration:
+        raise FileNotFoundError(f'No files found in {LOTTERY_TEMPLATES_FOLDER.name}')
 
-    if file_name is None:
-        return next(gen_lottery_files())
-    return next(file for file in gen_lottery_files() if file.name == file_name)
+    file: File = File(file_name, LOTTERY_TEMPLATES_FOLDER / file_name)
+    if not file.exists():
+        raise FileNotFoundError(f'File {file} does not exist!')
+    return file

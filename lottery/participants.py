@@ -28,9 +28,9 @@ def create_list_with_weighed_participants(participants_data_list: List[Dict]) ->
     """
 
     return [ParticipantWeighed(
-        participant_id=int(record.get('id')),
+        participant_id=int(record['id']),
         weight=int(record.get('weight', 1)),
-        first_name=record.get('first_name'),
-        last_name=record.get('last_name')
+        first_name=record['first_name'],
+        last_name=record['last_name']
     ) for
         record in participants_data_list]

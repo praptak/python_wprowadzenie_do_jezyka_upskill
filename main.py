@@ -18,10 +18,9 @@ from lottery.read_data import read_data
 )
 @click.option(
     '--lottery_template', '-l',
-    help='Choose lottery template from list. '
+    help='Choose lottery template from lottery_templates folder. '
          'If not provided, first (in alphabetically order) will be chosen',
-    required=False,
-    type=click.Choice([f.name for f in gen_lottery_files()])
+    required=False
 )
 @click.option(
     '--results_path', '-r',
@@ -33,9 +32,9 @@ from lottery.read_data import read_data
 )
 def main(participants, participants_format, lottery_template, results_path) -> None:
     """
-    Based on participants data draws alphabetically sorted winners for lottery
+    Based on _participants data draws alphabetically sorted winners for lottery
     and presents results to screen output and, optionally - to json file
-    PARTICIPANTS argument targets filename (without suffix) of file with participants data.
+    PARTICIPANTS argument targets filename (without suffix) of file with _participants data.
     """
     try:
         lottery_template_data: Dict = read_data(get_lottery_file(lottery_template).full_path)
@@ -49,11 +48,9 @@ def main(participants, participants_format, lottery_template, results_path) -> N
         )
 
         lottery.draw()
-        click.echo(lottery.show())
+        print(lottery.show())
     except FileNotFoundError as e:
-        click.echo(e)
-    except Exception as e:
-        click.echo(f'Unexpected error: {e}')
+        print(e)
 
 
 if __name__ == '__main__':

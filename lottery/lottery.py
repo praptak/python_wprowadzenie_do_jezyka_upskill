@@ -88,23 +88,23 @@ class LotteryResults:
 class Lottery:
     def __init__(self, lottery_template: LotteryTemplate, participants: List[ParticipantWeighed],
                  save_path: Optional[Path] = None):
-        self.lottery_template = lottery_template
-        self.participants = participants
-        self.save_path = save_path
-        self._remaining_participants = self.participants
-        self._lottery_results = LotteryResults(self.lottery_template.name, list())
+        self._lottery_template = lottery_template
+        self._participants = participants
+        self._save_path = save_path
+        self._remaining_participants = self._participants
+        self._lottery_results = LotteryResults(self._lottery_template.name, list())
 
-    def _lottery(self):
+    def draw(self) -> None:
         """
-        iterates through lottery prizes collection in lottery_template.
+        iterates through lottery prizes collection in _lottery_template.
         draws list of winners for each list of prize in collection depending on available amount of prize
-        during the lottery process, __remaining_participants list is used. If participants wins a prize, he/she will be
+        during the lottery process, __remaining_participants list is used. If _participants wins a prize, he/she will be
         removed from __remaining_participants. The list is used for further lottery process until all winners are drown
 
 
         :return:
         """
-        for prize in self.lottery_template.prizes:
+        for prize in self._lottery_template.prizes:
             prize_winners = PrizeWinners(prize, list())
 
             while len(prize_winners.winners) < prize_winners.prize.amount:
@@ -123,18 +123,11 @@ class Lottery:
 
             self._lottery_results.results.append(prize_winners)
 
-    def draw(self) -> None:
-        """
-        calls lottery depending on participants list and lottery_template
-        :return:
-        """
-        self._lottery()
-
     def show(self) -> str:
         """
         returns lottery results as string and optionally to json file
-        results will be saved in json format only if save_path field targets the file
+        results will be saved in json format only if _save_path field targets the file
         all lists of winners for each prize is sorted alphabetically
         :return: str - formatted multi-line string with lottery results
         """
-        return self._lottery_results.present_results(self.save_path)
+        return self._lottery_results.present_results(self._save_path)
