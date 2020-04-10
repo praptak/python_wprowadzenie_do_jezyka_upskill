@@ -32,7 +32,7 @@ from lottery.read_data import read_data
 )
 def main(participants, participants_format, lottery_template, results_path) -> None:
     """
-    Based on _participants data draws alphabetically sorted winners for lottery
+    Based on participants data draws alphabetically sorted winners for lottery
     and presents results to screen output and, optionally - to json file
     PARTICIPANTS argument targets filename (without suffix) of file with _participants data.
     """

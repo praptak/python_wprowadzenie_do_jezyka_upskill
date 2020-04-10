@@ -26,7 +26,7 @@ def get_participants_file(file_name: str) -> File:
     :return: File object matching file_name name
     """
 
-    file: File = File(file_name, PARTICIPANTS_FOLDER / file_name)
+    file = File(file_name, PARTICIPANTS_FOLDER / file_name)
 
     if not file.exists():
         raise FileNotFoundError(f'Participants data file {file_name} not found!')
@@ -41,7 +41,7 @@ def gen_lottery_files() -> Generator[File, None, None]:
     """
 
     for f in sorted(LOTTERY_TEMPLATES_FOLDER.glob('*.json')):
-        yield File(f.resolve().name, f.resolve())
+        yield File(f.name, f)
 
 
 def get_lottery_file(file_name: str = None) -> File:
@@ -52,13 +52,14 @@ def get_lottery_file(file_name: str = None) -> File:
     :param file_name: str
     :return: File
     """
-    try:
-        if file_name is None:
-            return next(gen_lottery_files())
-    except StopIteration:
-        raise FileNotFoundError(f'No files found in {LOTTERY_TEMPLATES_FOLDER.name}')
+    if file_name is None:
+        try:
+            file = next(gen_lottery_files())
+        except StopIteration:
+            raise FileNotFoundError(f'No files found in {LOTTERY_TEMPLATES_FOLDER.name}')
+    else:
+        file = File(file_name, LOTTERY_TEMPLATES_FOLDER / file_name)
+        if not file.exists():
+            raise FileNotFoundError(f'File {file} does not exist!')
 
-    file: File = File(file_name, LOTTERY_TEMPLATES_FOLDER / file_name)
-    if not file.exists():
-        raise FileNotFoundError(f'File {file} does not exist!')
     return file
