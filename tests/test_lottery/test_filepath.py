@@ -1,6 +1,5 @@
 import pytest
 
-
 from unittest.mock import MagicMock, patch
 from pathlib import Path
 
@@ -24,18 +23,16 @@ def test_get_participants_file_exception_raised():
         assert get_participants_file(test_file_name)
 
 
-#
-# def test_gen_lottery_files():
-#     pass
-#
+def test_gen_lottery_files():
+    pass
+
 
 @pytest.fixture
 def gen_lottery_files_mock():
-    return [File('file_a', 'dir_a/file_a'), File('file_b', 'dir_b/file_b')]
+    return [File('file_a', Path('dir_a/file_a')), File('file_b', Path('dir_b/file_b'))]
 
 
 def test_get_lottery_file(gen_lottery_files_mock):
     with patch('lottery.filepath.gen_lottery_files') as mock:
         mock.return_value = gen_lottery_files_mock
         get_lottery_file('file_a')
-
