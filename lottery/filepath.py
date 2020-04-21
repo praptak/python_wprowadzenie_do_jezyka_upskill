@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Generator
+from typing import Generator, Optional
 
 ROOT = Path(__file__).parent.parent
 PARTICIPANTS_FOLDER = (ROOT / 'files/participants/')
@@ -44,7 +44,7 @@ def gen_lottery_files() -> Generator[File, None, None]:
         yield File(f.name, f)
 
 
-def get_lottery_file(file_name: str = None) -> File:
+def get_lottery_file(file_name: Optional[str] = None) -> File:
     """
     searches for file with lottery template data in lottery_templates folder matching it's name with
     param value provided.
