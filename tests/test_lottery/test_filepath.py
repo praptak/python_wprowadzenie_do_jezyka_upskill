@@ -41,7 +41,6 @@ def empty_gen_lottery_files_mock():
 
 
 @pytest.mark.parametrize('file_name, exists', [(None, True), ('file_b', True)])
-# @pytest.mark.parametrize('exists', [True, True])
 def test_get_lottery_file(gen_lottery_files_mock, file_name, exists):
     with patch('lottery.filepath.gen_lottery_files') as mock:
         Path.exists = MagicMock(return_value=exists)
