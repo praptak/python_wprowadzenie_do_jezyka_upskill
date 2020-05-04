@@ -1,26 +1,33 @@
 from pathlib import Path
 from unittest.mock import patch, MagicMock
-
 import pytest
 
 from lottery.filepath import get_lottery_file, File, get_participants_file, PARTICIPANTS_FOLDER
 
 
+@pytest.fixture
+def mock_participants_folder(monkeypatch):
+    patched = Path('mock_participants_folder')
+    monkeypatch.setattr('lottery.filepath.PARTICIPANTS_FOLDER', patched)
+    return patched
+
+
 @pytest.mark.parametrize('test_file_name', ['sdsda'])
-def test_get_participants_file(test_file_name):
-    test_participants_folder = PARTICIPANTS_FOLDER
-    file = File(test_file_name, test_participants_folder / test_file_name)
-    test_path = Path
+def test_get_participants_file(test_file_name, mock_participants_folder):
+    test_path = File
     test_path.exists = MagicMock(return_value=True)
-    assert get_participants_file(test_file_name) == file
+    expected = File(test_file_name, mock_participants_folder / test_file_name)
+    actual = get_participants_file(test_file_name)
+    assert expected.name == actual.name
+    assert expected.full_path == actual.full_path
 
 
-def test_get_participants_file_exception_raised():
-    test_file_name = 'test_file_name'
-    test_path = Path
+@pytest.mark.parametrize('test_file_name', ['sdsda'])
+def test_get_participants_file_exception_raised(test_file_name, mock_participants_folder):
+    test_path = File
     test_path.exists = MagicMock(return_value=False)
     with pytest.raises(FileNotFoundError):
-        assert get_participants_file(test_file_name)
+        get_participants_file(test_file_name)
 
 
 @pytest.fixture()
@@ -59,4 +66,4 @@ def test_get_lottery_file_raise_exception(
     mock_exists.return_value = False
     mock_gen_lottery_files.return_value = empty_gen_lottery_files_mock
     with pytest.raises(FileNotFoundError) as e:
-        assert get_lottery_file(file_name)
+        get_lottery_file(file_name)
