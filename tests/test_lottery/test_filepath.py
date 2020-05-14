@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List, Generator
 from unittest.mock import patch, MagicMock
 import pytest
 
@@ -9,6 +10,13 @@ from lottery.filepath import get_lottery_file, File, get_participants_file, PART
 def mock_participants_folder(monkeypatch):
     patched = Path('mock_participants_folder')
     monkeypatch.setattr('lottery.filepath.PARTICIPANTS_FOLDER', patched)
+    return patched
+
+
+@pytest.fixture
+def mock_lottery_templates_folder(monkeypatch):
+    patched = Path('dir')
+    monkeypatch.setattr('lottery.filepath.LOTTERY_TEMPLATES_FOLDER', patched)
     return patched
 
 
@@ -30,40 +38,55 @@ def test_get_participants_file_exception_raised(test_file_name, mock_participant
         get_participants_file(test_file_name)
 
 
-@pytest.fixture()
-def gen_lottery_files_mock():
-    def file_generator():
-        for file in [File('file_a', Path('dir_a/file_a')), File('file_b', Path('dir_b/file_b'))]:
-            yield file
-
-    return file_generator()
-
-
-@pytest.fixture()
-def empty_gen_lottery_files_mock():
-    def file_generator():
-        yield from ()
-
-    return file_generator()
-
-
-@pytest.mark.parametrize('file_name, exists', [(None, True), ('file_b', True)])
-def test_get_lottery_file(gen_lottery_files_mock, file_name, exists):
+@pytest.mark.parametrize(
+    'file_name, exists, return_file, files_list',
+    [
+        (
+                None,
+                True,
+                File('file_a', Path('dir/file_a')),
+                [File('file_a', Path('dir/file_a')), File('file_b', Path('dir/file_b'))]
+        ),
+        (
+                'file_b',
+                True,
+                File('file_b', Path('dir/file_b')),
+                [File('file_a', Path('dir/file_a')), File('file_b', Path('dir/file_b'))]
+        )
+    ]
+)
+def test_get_lottery_file(file_name, exists, return_file, mock_lottery_templates_folder,
+                          files_list):
     with patch('lottery.filepath.gen_lottery_files') as mock:
-        Path.exists = MagicMock(return_value=exists)
-        mock.return_value = gen_lottery_files_mock
-        assert get_lottery_file(file_name)
+        mock.return_value = (file for file in files_list)
+        File.exists = MagicMock(return_value=exists)
+        expected = return_file
+        actual = get_lottery_file(file_name)
+        assert expected == actual
 
 
-@pytest.mark.parametrize('file_name', [None, 'file_c'])
-@patch('lottery.filepath.gen_lottery_files')
-@patch('pathlib.Path.exists')
+@pytest.mark.parametrize(
+    'file_name, files_list',
+    [
+        (None, []),
+        ('file_c', [File('file_a', Path('dir/file_a')), File('file_b', Path('dir/file_b'))])
+    ]
+)
+@patch('lottery.filepath.File.exists')
 def test_get_lottery_file_raise_exception(
         mock_exists,
-        mock_gen_lottery_files,
-        empty_gen_lottery_files_mock,
-        file_name):
-    mock_exists.return_value = False
-    mock_gen_lottery_files.return_value = empty_gen_lottery_files_mock
-    with pytest.raises(FileNotFoundError) as e:
-        get_lottery_file(file_name)
+        mock_lottery_templates_folder,
+        file_name,
+        files_list
+):
+    with patch('lottery.filepath.gen_lottery_files') as mock:
+        mock.return_value = (file for file in files_list)
+        mock_exists.return_value = False
+        # mock_gen_lottery_files.return_value = empty_gen_lottery_files_mock
+        with pytest.raises(FileNotFoundError) as e:
+            get_lottery_file(file_name)
+
+
+def test_gen_lottery_files():
+    # TODO
+    pass
