@@ -9,22 +9,38 @@ from lottery.participants import ParticipantWeighed
 
 
 class TestLottery:
+    @pytest.mark.parametrize(
+        'lottery_template_name, lottery_template_prizes, participants, random_choices, expected_results',
+        [
+            (
+                    'lottery_data_single_winner_five_weighed_participants',
+                    [Prize(1, 'first', 1)],
+                    [
+                        ParticipantWeighed('FirstName_a', 'Lastname_a', 1, 5),
+                        ParticipantWeighed('FirstName_b', 'Lastname_b', 2, 4),
+                        ParticipantWeighed('FirstName_c', 'Lastname_c', 3, 3),
+                        ParticipantWeighed('FirstName_d', 'Lastname_d', 4, 2),
+                        ParticipantWeighed('FirstName_e', 'Lastname_e', 5, 1)
+                    ],
+                    [
+                        ParticipantWeighed('FirstName_a', 'Lastname_a', 1, 5),
+                        ParticipantWeighed('FirstName_b', 'Lastname_b', 2, 4),
+                        ParticipantWeighed('FirstName_c', 'Lastname_c', 3, 3),
+                        ParticipantWeighed('FirstName_d', 'Lastname_d', 4, 2),
+                        ParticipantWeighed('FirstName_e', 'Lastname_e', 5, 1)
+                    ],
+                    LotteryResults('lottery_data_single_winner_five_weighed_participants', [
+                        PrizeWinners(Prize(1, 'first', 1), [ParticipantWeighed('FirstName_a', 'Lastname_a', 1, 5)])])
+            )
+        ]
+    )
+    def test_draw(self, lottery_template_name, lottery_template_prizes, participants, expected_results, random_choices):
+        lottery = Lottery(LotteryTemplate(lottery_template_name, lottery_template_prizes), participants)
+        with patch('random.choices', side_effect=random_choices):  #### SIDE EFFECT!!!!
+            lottery.draw()
 
-    @pytest.fixture()
-    def lottery(self):
-        return Lottery(
-            LotteryTemplate('lottery', [Prize(1, 'first', 1), Prize(2, 'seconds', 2)]),
-            [
-                ParticipantWeighed('FirstName_a', 'Lastname_a', 1, 5),
-                ParticipantWeighed('FirstName_b', 'Lastname_b', 2, 4),
-                ParticipantWeighed('FirstName_c', 'Lastname_c', 3, 3),
-                ParticipantWeighed('FirstName_d', 'Lastname_d', 4, 2),
-                ParticipantWeighed('FirstName_e', 'Lastname_e', 5, 1)
-            ]
-        )
-
-    def test_draw(self, lottery):
-        lottery.draw()
+        assert lottery._lottery_results.results == expected_results
+        print(lottery._lottery_results.results)
 
     @patch.object(LotteryResults, 'present_results', autospec=True)
     def test_show(self, present_mock, lottery):

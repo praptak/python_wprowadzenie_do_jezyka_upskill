@@ -25,4 +25,4 @@ def mock_list_dicts():
 
 
 def test_create_list_with_weighed_participants(mock_list_dicts):
-    assert create_list_with_weighed_participants(mock_list_dicts)
+    create_list_with_weighed_participants(mock_list_dicts)

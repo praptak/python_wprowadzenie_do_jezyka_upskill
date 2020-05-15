@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List, Generator
 from unittest.mock import patch, MagicMock
 import pytest
 
@@ -19,7 +18,7 @@ def mock_lottery_templates_folder(monkeypatch):
     monkeypatch.setattr('lottery.filepath.LOTTERY_TEMPLATES_FOLDER', patched)
     return patched
 
-
+#### SPACZUJ EXIST
 @pytest.mark.parametrize('test_file_name', ['sdsda'])
 def test_get_participants_file(test_file_name, mock_participants_folder):
     test_path = File
@@ -29,7 +28,7 @@ def test_get_participants_file(test_file_name, mock_participants_folder):
     assert expected.name == actual.name
     assert expected.full_path == actual.full_path
 
-
+#### SPACZUJ EXIST
 @pytest.mark.parametrize('test_file_name', ['sdsda'])
 def test_get_participants_file_exception_raised(test_file_name, mock_participants_folder):
     test_path = File
@@ -82,7 +81,6 @@ def test_get_lottery_file_raise_exception(
     with patch('lottery.filepath.gen_lottery_files') as mock:
         mock.return_value = (file for file in files_list)
         mock_exists.return_value = False
-        # mock_gen_lottery_files.return_value = empty_gen_lottery_files_mock
         with pytest.raises(FileNotFoundError) as e:
             get_lottery_file(file_name)
 
