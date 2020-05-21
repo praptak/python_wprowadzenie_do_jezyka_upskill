@@ -248,7 +248,7 @@ class TestLotteryResults:
         open_mock = mock_open()
         with patch('json.dumps', return_value=data_to_write):
             with patch('builtins.open', open_mock):
-                lottery_results._save_results(file_path)
+                lottery_results._save_results(Path(file_path))
 
         open_mock.assert_called_with(file_path, "w")
         open_mock.return_value.write.assert_called_once_with(data_to_write)
