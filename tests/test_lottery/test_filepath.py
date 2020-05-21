@@ -1,8 +1,9 @@
+import types
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 import pytest
 
-from lottery.filepath import get_lottery_file, File, get_participants_file, PARTICIPANTS_FOLDER
+from lottery.filepath import get_lottery_file, File, get_participants_file, gen_lottery_files
 
 
 @pytest.fixture
@@ -18,23 +19,21 @@ def mock_lottery_templates_folder(monkeypatch):
     monkeypatch.setattr('lottery.filepath.LOTTERY_TEMPLATES_FOLDER', patched)
     return patched
 
-#### SPACZUJ EXIST
-@pytest.mark.parametrize('test_file_name', ['sdsda'])
+
+@pytest.mark.parametrize('test_file_name', ['example_file.txt'])
 def test_get_participants_file(test_file_name, mock_participants_folder):
-    test_path = File
-    test_path.exists = MagicMock(return_value=True)
-    expected = File(test_file_name, mock_participants_folder / test_file_name)
-    actual = get_participants_file(test_file_name)
+    with patch.object(File, 'exists', MagicMock(return_value=True)):
+        expected = File(test_file_name, mock_participants_folder / test_file_name)
+        actual = get_participants_file(test_file_name)
     assert expected.name == actual.name
     assert expected.full_path == actual.full_path
 
-#### SPACZUJ EXIST
-@pytest.mark.parametrize('test_file_name', ['sdsda'])
+
+@pytest.mark.parametrize('test_file_name', ['example_file.txt'])
 def test_get_participants_file_exception_raised(test_file_name, mock_participants_folder):
-    test_path = File
-    test_path.exists = MagicMock(return_value=False)
-    with pytest.raises(FileNotFoundError):
-        get_participants_file(test_file_name)
+    with patch.object(File, 'exists', MagicMock(return_value=False)):
+        with pytest.raises(FileNotFoundError):
+            get_participants_file(test_file_name)
 
 
 @pytest.mark.parametrize(
@@ -56,12 +55,13 @@ def test_get_participants_file_exception_raised(test_file_name, mock_participant
 )
 def test_get_lottery_file(file_name, exists, return_file, mock_lottery_templates_folder,
                           files_list):
-    with patch('lottery.filepath.gen_lottery_files') as mock:
-        mock.return_value = (file for file in files_list)
-        File.exists = MagicMock(return_value=exists)
-        expected = return_file
-        actual = get_lottery_file(file_name)
-        assert expected == actual
+    with patch.object(File,'exists', MagicMock(return_value=exists)):
+        with patch('lottery.filepath.gen_lottery_files') as mock:
+            mock.return_value = (file for file in files_list)
+            expected = return_file
+            actual = get_lottery_file(file_name)
+
+    assert expected == actual
 
 
 @pytest.mark.parametrize(
@@ -85,6 +85,35 @@ def test_get_lottery_file_raise_exception(
             get_lottery_file(file_name)
 
 
-def test_gen_lottery_files():
-    # TODO
-    pass
+@pytest.fixture(
+    params=[
+        (
+                [
+                    'file_a.json',
+                    'file_b.other',
+                    'file_c.json'
+                ],
+                [
+                    'file_a.json',
+                    'file_c.json'
+                ]
+        ),
+        (
+                [],
+                []
+        )
+    ]
+)
+def mock_lottery_templates_folder_gen(tmpdir, monkeypatch, request):
+    patched = tmpdir.mkdtemp()
+    for record in request.param[0]:
+        patched.join(record).write('content')
+    monkeypatch.setattr('lottery.filepath.LOTTERY_TEMPLATES_FOLDER', Path(patched.strpath))
+    return [File(file_name, Path(patched.strpath) / file_name) for file_name in request.param[1]]
+
+
+def test_gen_lottery_files(mock_lottery_templates_folder_gen):
+    expected_result = mock_lottery_templates_folder_gen
+    actual_results = gen_lottery_files()
+    assert isinstance(actual_results, types.GeneratorType)
+    assert expected_result == list(actual_results)
