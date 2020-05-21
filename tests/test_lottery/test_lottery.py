@@ -1,5 +1,6 @@
 import builtins
 import random
+from io import BufferedWriter, TextIOWrapper
 from pathlib import Path
 from unittest.mock import patch, mock_open
 import pytest
@@ -137,6 +138,10 @@ class TestLotteryResults:
         )
 
     @pytest.fixture()
+    def mock_lottery_results_single_show(self):
+        return f'Lottery: results\n\tWinner(s) of "first" prize:\n\t\tFirstName_a Lastname_a'
+
+    @pytest.fixture()
     def lottery_results_many(self):
         return LotteryResults(
             'lottery_results_many',
@@ -181,15 +186,43 @@ class TestLotteryResults:
         )
 
     @pytest.fixture()
+    def lottery_results_many_sorted_show(self):
+        return f'Lottery: lottery_results_many\n\tWinner(s) of "first" prize:\n\t\tFirstName_a Lastname_a\n\t\tFirstName_b Lastname_b\n\tWinner(s) of "second" prize:\n\t\tFirstName_c Lastname_c\n\t\tFirstName_e Lastname_e'
+
+    @pytest.fixture()
     def lottery_results_empty(self):
         return LotteryResults('empty', [])
 
-    @pytest.fixture(params=['mock_lottery_results_single','lottery_results_many','lottery_results_many_sorted','lottery_results_empty'])
+    @pytest.fixture()
+    def lottery_results_empty_show(self):
+        return 'Lottery: empty'
+
+    @pytest.fixture(params=[
+        ('mock_lottery_results_single', 'mock_lottery_results_single'),
+        ('lottery_results_many', 'lottery_results_many_sorted'),
+        ('lottery_results_empty', 'lottery_results_empty')
+    ]
+    )
     def mock_lottery_results(
             self,
             request
     ):
-        return request.getfuncargvalue(request.param)
+        return (
+            request.getfixturevalue(request.param[0]),
+            request.getfixturevalue(request.param[1])
+        )
+
+    @pytest.fixture(params=[
+        ('lottery_results_empty', 'lottery_results_empty_show'),
+        ('mock_lottery_results_single', 'mock_lottery_results_single_show'),
+        ('lottery_results_many_sorted', 'lottery_results_many_sorted_show')
+    ]
+    )
+    def mock_lottery_results_show(self, request):
+        return (
+            request.getfixturevalue(request.param[0]),
+            request.getfixturevalue(request.param[1])
+        )
 
     @patch.object(LotteryResults, '_sort_results', autospec=True)
     @patch.object(LotteryResults, '_show_results', autospec=True)
@@ -204,22 +237,26 @@ class TestLotteryResults:
         else:
             open_mock.assert_called_once_with(str(file_path), 'w')
 
-    def test_show_results(self):
-        pass
+    def test_show_results(self, mock_lottery_results_show):
+        lottery_results = mock_lottery_results_show[0]
+        expected_output = mock_lottery_results_show[1]
+        actual_output = lottery_results._show_results()
+        assert expected_output == actual_output
 
-    def test_save_results(self):
-        pass
+    @pytest.mark.parametrize('data_to_write', ['supercalifragilisticexpialidoucious'])
+    def test_save_results(self, data_to_write):
+        file_path = 'file_path.txt'
+        lottery_results = LotteryResults('lottery_name', [])
+        open_mock = mock_open()
+        with patch('json.dumps', return_value=data_to_write):
+            with patch('builtins.open', open_mock):
+                lottery_results._save_results(file_path)
 
-    @pytest.mark.parametrize(
-        'lottery_results, expected_results',
-        [
-            ('mock_lottery_results_single', 'mock_lottery_results_single'),
-            ('lottery_results_many', 'lottery_results_many_sorted'),
-            ('lottery_results_empty', 'lottery_results_empty')
-        ], indirect=False
-    )
-    def test_sort_results(self, lottery_results, expected_results, mock_lottery_results):
-        lottery_results_mock = mock_lottery_results(lottery_results)
-        expected_results = mock_lottery_results(expected_results)
-        lottery_results
+        open_mock.assert_called_with(file_path, "w")
+        open_mock.return_value.write.assert_called_once_with(data_to_write)
 
+    def test_sort_results(self, mock_lottery_results):
+        lottery_results = mock_lottery_results[0]
+        expected_results = mock_lottery_results[1]
+        lottery_results._sort_results()
+        assert lottery_results == expected_results

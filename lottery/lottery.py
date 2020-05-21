@@ -72,7 +72,7 @@ class LotteryResults:
         :param file_path: where to save data
         :return:
         """
-        json_str = json.dumps(json.dumps(asdict(self), indent=2, sort_keys=True))
+        json_str = json.dumps(asdict(self), indent=2, sort_keys=True)
         with open(str(file_path), 'w') as file:
             file.write(json_str)
 
