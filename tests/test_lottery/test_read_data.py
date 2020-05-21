@@ -20,7 +20,7 @@ def test_read_json(test_file_path, data):
         expected = json.loads(data)
         assert actual == expected
 
-####wartości jeszcze sprawdz na mockach
+
 @pytest.mark.parametrize('path',
                          [Path('dir_a/file_a.csv'), Path('dir_a/file_b.json'), Path('dir_a/file_a.other_file_type')])
 @patch('lottery.read_data.read_json')
@@ -31,10 +31,12 @@ def test_read_data(mock_read_csv, mock_read_json, path):
         result = read_data(path)
         mock_read_csv.assert_called_once_with(str(path))
         mock_read_json.assert_not_called()
+        assert result==mock_read_csv.return_value
     elif suffix == '.json':
-        read_data(path)
+        result = read_data(path)
         mock_read_json.assert_called_once_with(str(path))
         mock_read_csv.assert_not_called()
+        assert result == mock_read_json.return_value
     else:
         with pytest.raises(TypeError):
             read_data(path)
