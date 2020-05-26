@@ -91,7 +91,7 @@ class Lottery:
         self._lottery_template = lottery_template
         self._participants = participants
         self._save_path = save_path
-        self._remaining_participants = self._participants
+        self._remaining_participants = self._participants[:]
         self._lottery_results = LotteryResults(self._lottery_template.name, list())
 
     def draw(self) -> None:

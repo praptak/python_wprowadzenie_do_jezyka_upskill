@@ -21,7 +21,7 @@ def read_csv(path: str) -> List[Dict]:
    :return: List[Dict]
    """
     with open(path, 'r') as csv_file:
-        return [row for row in csv.DictReader(csv_file, skipinitialspace=True)]
+        return list(csv.DictReader(csv_file, skipinitialspace=True))
 
 
 def read_data(path: Path) -> Union[List[Dict], Dict]:
